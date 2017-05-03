@@ -53,14 +53,20 @@ class GoogleMapPlotter(object):
         self.points.append((lat, lng, color[1:], title))
 
     def scatter(self, lats, lngs, color=None, size=None, marker=True, c=None, s=None, **kwargs):
-        color = color or c
-        size = size or s or 40
-        kwargs["color"] = color
+        if isinstance(color, list):
+            colors = color
+            kwargs["color"] = None
+        else:
+            color = color or c
+            kwargs["color"] = color
+
         kwargs["size"] = size
+        size = size or s or 40
         settings = self._process_kwargs(kwargs)
-        for lat, lng in zip(lats, lngs):
+        for i, (lat, lng) in enumerate( zip(lats, lngs) ):
             if marker:
-                self.marker(lat, lng, settings['color'])
+                color = colors[i] if colors else settings['color']
+                self.marker(lat, lng, color)
             else:
                 self.circle(lat, lng, size, **settings)
 
