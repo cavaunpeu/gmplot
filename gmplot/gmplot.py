@@ -15,7 +15,7 @@ def safe_iter(var):
 
 class GoogleMapPlotter(object):
 
-    def __init__(self, center_lat, center_lng, zoom):
+    def __init__(self, center_lat, center_lng, zoom, markers_base_path=None, api_key=None):
         self.center = (float(center_lat), float(center_lng))
         self.zoom = int(zoom)
         self.grids = None
@@ -25,9 +25,12 @@ class GoogleMapPlotter(object):
         self.heatmap_points = []
         self.radpoints = []
         self.gridsetting = None
-        self.coloricon = os.path.join(os.path.dirname(__file__), 'markers/%s.png')
+        if markers_base_path is None:
+            markers_base_path = os.path.dirname(__file__)
+        self.coloricon = os.path.join(markers_base_path, 'markers/%s.png')
         self.color_dict = mpl_color_map
         self.html_color_codes = html_color_codes
+        self.api_key = api_key
 
     @classmethod
     def from_geocode(cls, location_string, zoom=13):
@@ -185,7 +188,7 @@ class GoogleMapPlotter(object):
         f.write(
             '<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>\n')
         f.write('<title>Google Maps - pygmaps </title>\n')
-        f.write('<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=visualization&sensor=true_or_false"></script>\n')
+        f.write('<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={}&libraries=visualization&sensor=true_or_false"></script>\n'.format(self.api_key))
         f.write('<script type="text/javascript">\n')
         f.write('\tfunction initialize() {\n')
         self.write_map(f)
